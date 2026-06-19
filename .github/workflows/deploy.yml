@@ -1,0 +1,54 @@
+name: kora-secrets-protocol
+on:
+    push:
+        branches:
+            - master
+    workflow_dispatch:
+permissions:
+    contents: read
+    id-token: write # OIDC trusted publishing to npm
+jobs:
+    deploy:
+        name: Deploying from ${{ github.ref_name }}
+        environment: mainnet
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  registry-url: https://registry.npmjs.org
+                  scope: '@koralabs'
+
+            - name: Install deps
+              run: npm install --no-audit --no-fund
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Test
+              run: npm test
+
+            - name: Build
+              run: npm run build
+
+            # Only publish when package.json's version is new (doc/CI commits that don't bump
+            # the version won't fail trying to republish).
+            - name: Check version
+              id: ver
+              run: |
+                  VERSION=$(node -p "require('./package.json').version")
+                  if npm view "@koralabs/kora-secrets-protocol@${VERSION}" version >/dev/null 2>&1; then
+                      echo "publish=false" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "publish=true" >> "$GITHUB_OUTPUT"
+                  fi
+
+            # npm publish via OIDC trusted publishing. main=lib/index.js + files=[lib], so publish
+            # straight from the package root.
+            - name: Publish to npm
+              if: steps.ver.outputs.publish == 'true'
+              run: npm publish --provenance --access public

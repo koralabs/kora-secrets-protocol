@@ -1,0 +1,53 @@
+{
+  "_comment": "Pinned CBOR (PlutusData, constructor tag 121+i, indefinite arrays) of each SSR datum, captured from contracts/lib/ssr/types.ak via aiken cbor.serialise. The off-chain TS codecs (ssr-protocol P3-T1) MUST round-trip to these exact bytes. Regenerate from lib/tests/ssr/types.test.ak if the types change (and bump the on-chain + off-chain version together).",
+  "version": 1,
+  "GuardianKeyProfileDatum": {
+    "sample": {
+      "version": 1,
+      "guardian_handle_asset_id": "f0f0677561726469616e",
+      "paired_token_label": 3,
+      "guardian_key_source": "HandleControlled",
+      "guardian_recovery_pubkey_x25519": "1111111111111111111111111111111111111111111111111111111111111111",
+      "key_proof_cid": null,
+      "key_proof_hash_blake2b256": null,
+      "updated_slot": 1000
+    },
+    "cbor_hex": "d8799f014af0f0677561726469616e03d87980d8799f58201111111111111111111111111111111111111111111111111111111111111111ffd87a80d87a801903e8ff"
+  },
+  "RecoveryPolicyDatum": {
+    "sample": {
+      "version": 1,
+      "network_id": 0,
+      "owner_handle_asset_id": "f0f06f776e6572",
+      "threshold_m": 2,
+      "shares_n": 3,
+      "timelock_seconds": 172800,
+      "guardian_ids": ["aa01", "aa02", "aa03"],
+      "bundle_hash_blake2b256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "bundle_cids": ["Qma", "Qmb"],
+      "policy_nonce": 0
+    },
+    "cbor_hex": "d8799f010047f0f06f776e657202031a0002a3009f42aa0142aa0242aa03ff582022222222222222222222222222222222222222222222222222222222222222229f43516d6143516d62ff00ff"
+  },
+  "RecoveryRequestDatum": {
+    "sample": {
+      "version": 1,
+      "policy_ref": { "owner_handle_asset_id": "f0f06f776e6572", "policy_nonce": 0 },
+      "session_id": "deadbeef",
+      "recovery_pubkey_x25519": "3333333333333333333333333333333333333333333333333333333333333333",
+      "created_slot": 500,
+      "status": "Pending"
+    },
+    "cbor_hex": "d8799f01d8799f47f0f06f776e657200ff44deadbeef582033333333333333333333333333333333333333333333333333333333333333331901f4d87980ff"
+  },
+  "GuardianApprovalDatum": {
+    "sample": {
+      "version": 1,
+      "policy_ref": { "owner_handle_asset_id": "f0f06f776e6572", "policy_nonce": 0 },
+      "session_id": "deadbeef",
+      "guardian_id": "aa01",
+      "reencrypted_share_cid": "Qmc"
+    },
+    "cbor_hex": "d8799f01d8799f47f0f06f776e657200ff44deadbeef42aa0143516d63ff"
+  }
+}
