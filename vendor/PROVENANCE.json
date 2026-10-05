@@ -15,7 +15,7 @@
   "sdk_commit": "301df85",
   "crypto_source_commit": "ab3d4b77f6aa92dc44ecf1836501aaf22b75ca8b",
   "packaging": {
-    "strategy": "Exact manifest versions; checkout lock resolves integrity-checked vendor tarballs. pack:portable compiles a fresh staging directory and bundles installed locked runtime closure except root @cardano-sdk/core and @aiken-lang/merkle-patricia-forestry, which remain normal shared registry dependencies.",
-    "limitation": "Other bundled runtime libraries and internal Cardano versions may duplicate consumer libraries. Outer protocol integrity covers the bundle; consumer lock has no separate integrity for embedded packages."
+    "strategy": "No dependency bundling. Exact SDK4.0.0 and crypto1.1.0 peer dependencies installed once by consumer; local development lock resolves verified vendor tarballs.",
+    "consumer_contract": "Install protocol, SDK and crypto as direct version/hash-named local tarball dependencies until registry publication. Shared peer instances preserve SsrError instanceof and DeMi label-mint API/Trie identity."
   }
 }

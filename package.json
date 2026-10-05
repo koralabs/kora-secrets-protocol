@@ -1,6 +1,6 @@
 {
   "name": "@koralabs/kora-secrets-protocol",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "description": "Social Secret Recovery \u2014 off-chain protocol: CIP-68 datum codecs, tx-plan builders, chain-query providers, IPFS storage, and the live @cardano-sdk + scalus tx realizers (build/sign/submit) for the SSR validators.",
   "license": "MIT",
@@ -31,7 +31,8 @@
     "build": "tsc -p tsconfig.json",
     "lint": "tsc --noEmit -p tsconfig.json",
     "test": "node --experimental-strip-types --test \"src/**/*.test.ts\"",
-    "pack:portable": "node scripts/pack-portable.mjs"
+    "pack:portable": "node scripts/pack-portable.mjs",
+    "validate:consumer": "node scripts/validate-consumer.mjs"
   },
   "dependencies": {
     "@aiken-lang/merkle-patricia-forestry": "^1.3.1",
@@ -39,8 +40,6 @@
     "@cardano-sdk/input-selection": "0.14.29",
     "@cardano-sdk/tx-construction": "0.28.11",
     "@cardano-sdk/util": "0.15.7",
-    "@koralabs/handles-decentralized-minting": "4.0.0",
-    "@koralabs/kora-secrets-crypto": "1.1.0",
     "@noble/hashes": "^1.8.0",
     "@scure/base": "^1.2.6",
     "@scure/bip39": "^1.5.4",
@@ -48,7 +47,13 @@
   },
   "devDependencies": {
     "@types/node": "^22.12.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "@koralabs/handles-decentralized-minting": "file:vendor/koralabs-handles-decentralized-minting-4.0.0-66771329625b.tgz",
+    "@koralabs/kora-secrets-crypto": "file:vendor/koralabs-kora-secrets-crypto-1.1.0-847446e68b32.tgz"
   },
-  "private": true
+  "private": true,
+  "peerDependencies": {
+    "@koralabs/handles-decentralized-minting": "4.0.0",
+    "@koralabs/kora-secrets-crypto": "1.1.0"
+  }
 }

@@ -1,4 +1,4 @@
-// Bundle unavailable packages and their locked runtime closure, keeping public type owners shared.
+// Freshly compile a portable package; public SDK/crypto class identity belongs to consumer peers.
 import { mkdtemp, mkdir, cp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -13,18 +13,14 @@ try {
   for (const name of ['vendor', 'README.md']) await cp(join(root, name), join(stage, name), { recursive: true });
   execFileSync(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(root, 'tsconfig.json'), '--outDir', join(stage, 'lib')], { cwd: root, stdio: 'inherit' });
   const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
-  manifest.bundleDependencies = ['@koralabs/handles-decentralized-minting', '@koralabs/kora-secrets-crypto'];
+  delete manifest.devDependencies;
   delete manifest.scripts;
   await writeFile(join(stage, 'package.json'), JSON.stringify(manifest, null, 2) + '\n');
-  const shared = new Set(['@cardano-sdk/core', '@aiken-lang/merkle-patricia-forestry'].map(name => join(root, 'node_modules', name)));
-  await cp(join(root, 'node_modules'), join(stage, 'node_modules'), { recursive: true, filter: path => !shared.has(path) });
   const provenance = JSON.parse(await readFile(join(root, 'vendor/PROVENANCE.json'), 'utf8'));
   for (const artifact of provenance.artifacts) {
     const path = join(root, artifact.path);
     if (createHash('sha256').update(await readFile(path)).digest('hex') !== artifact.sha256) throw new Error(`Vendor integrity mismatch: ${artifact.package}`);
-    const target = join(stage, 'node_modules', artifact.package);
-    await mkdir(target, { recursive: true });
-    execFileSync('tar', ['-xzf', path, '--strip-components=1', '-C', target]);
+
   }
   const result = execFileSync(process.execPath, [process.env.npm_execpath, 'pack', '--ignore-scripts', '--json', '--pack-destination', destination], { cwd: stage, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
   const packed = JSON.parse(result)[0];
