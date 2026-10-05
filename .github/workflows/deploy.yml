@@ -41,7 +41,9 @@ jobs:
               id: ver
               run: |
                   VERSION=$(node -p "require('./package.json').version")
-                  if npm view "@koralabs/kora-secrets-protocol@${VERSION}" version >/dev/null 2>&1; then
+                  if [ "$(node -p "Boolean(require('./package.json').private)")" = "true" ]; then
+                      echo "publish=false" >> "$GITHUB_OUTPUT"
+                  elif npm view "@koralabs/kora-secrets-protocol@${VERSION}" version >/dev/null 2>&1; then
                       echo "publish=false" >> "$GITHUB_OUTPUT"
                   else
                       echo "publish=true" >> "$GITHUB_OUTPUT"

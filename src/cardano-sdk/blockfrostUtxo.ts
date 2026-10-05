@@ -6,6 +6,7 @@ import type { Cardano as CardanoTypes } from "@cardano-sdk/core";
 import type { HexBlob } from "@cardano-sdk/util";
 
 import { Cardano, Serialization } from "./index.ts";
+import { rateLimitedFetch } from "../rate-limited-fetch.ts";
 
 type PaymentAddress = CardanoTypes.TxOut["address"];
 
@@ -78,9 +79,10 @@ export const fetchBlockfrostUtxos = async (
   let page = 1;
 
   while (true) {
-    const response = await fetchFn(
+    const response = await rateLimitedFetch(
       `${host}/addresses/${address}/utxos?page=${page}&count=100`,
       { headers: { "Content-Type": "application/json", project_id: apiKey } },
+      fetchFn,
     );
     if (response.status === 404) break;
     if (!response.ok) {

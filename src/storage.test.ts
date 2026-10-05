@@ -121,12 +121,12 @@ function fakeGateway(stored: Map<string, Uint8Array>): typeof fetch {
       const bytes = new Uint8Array(init.body as ArrayBuffer);
       const cid = cidV1Raw(bytes);
       stored.set(cid, bytes);
-      return { ok: true, status: 200, json: () => Promise.resolve({ IpfsHash: cid }) } as Response;
+      return Response.json({ IpfsHash: cid });
     }
     const cid = u.split('/').pop()!;
     const bytes = stored.get(cid);
-    if (!bytes) return { ok: false, status: 404, arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)) } as Response;
-    return { ok: true, status: 200, arrayBuffer: () => Promise.resolve(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)) } as Response;
+    if (!bytes) return new Response(null, { status: 404 });
+    return new Response(bytes.slice());
   }) as unknown as typeof fetch;
 }
 
@@ -160,21 +160,21 @@ test('HttpPinningBlobStore: pin failure, missing-CID response, and gateway 404 a
   const pinFail = new HttpPinningBlobStore({
     pinUrl: 'https://pin.example/add',
     gatewayUrl: 'https://gw.example/ipfs',
-    fetchImpl: (async () => ({ ok: false, status: 500, json: () => Promise.resolve({}) }) as Response) as unknown as typeof fetch
+    fetchImpl: (async () => Response.json({}, { status: 500 })) as typeof fetch
   });
   await assert.rejects(() => pinFail.put(utf8ToBytes('x')), (e) => isSsrError(e, SsrErrorCode.InvalidBundle));
 
   const noCid = new HttpPinningBlobStore({
     pinUrl: 'https://pin.example/add',
     gatewayUrl: 'https://gw.example/ipfs',
-    fetchImpl: (async () => ({ ok: true, status: 200, json: () => Promise.resolve({ wrong: 'field' }) }) as Response) as unknown as typeof fetch
+    fetchImpl: (async () => Response.json({ wrong: 'field' })) as typeof fetch
   });
   await assert.rejects(() => noCid.put(utf8ToBytes('x')), (e) => isSsrError(e, SsrErrorCode.InvalidBundle));
 
   const gw404 = new HttpPinningBlobStore({
     pinUrl: 'https://pin.example/add',
     gatewayUrl: 'https://gw.example/ipfs',
-    fetchImpl: (async () => ({ ok: false, status: 404, arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)) }) as Response) as unknown as typeof fetch
+    fetchImpl: (async () => new Response(null, { status: 404 })) as typeof fetch
   });
   await assert.rejects(() => gw404.get('bafkrei-x'), (e) => isSsrError(e, SsrErrorCode.InvalidBundle));
 });

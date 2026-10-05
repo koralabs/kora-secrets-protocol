@@ -1,0 +1,21 @@
+{
+  "artifacts": [
+    {
+      "package": "@koralabs/handles-decentralized-minting",
+      "path": "vendor/koralabs-handles-decentralized-minting-4.0.0-66771329625b.tgz",
+      "sha256": "66771329625bce1dc4aef81e455bbc6ef5de729b8e65cbebe46a5a32c5044bba"
+    },
+    {
+      "package": "@koralabs/kora-secrets-crypto",
+      "path": "vendor/koralabs-kora-secrets-crypto-1.1.0-847446e68b32.tgz",
+      "sha256": "847446e68b32ebf40678611495e1bdfcdcef5a96eeedba3c190947e48335daa4"
+    }
+  ],
+  "source": "Validated local builds from preserved project source; not downloaded or claimed as published registry versions.",
+  "sdk_commit": "301df85",
+  "crypto_source_commit": "ab3d4b77f6aa92dc44ecf1836501aaf22b75ca8b",
+  "packaging": {
+    "strategy": "Exact manifest versions; checkout lock resolves integrity-checked vendor tarballs. pack:portable compiles a fresh staging directory and bundles installed locked runtime closure except root @cardano-sdk/core and @aiken-lang/merkle-patricia-forestry, which remain normal shared registry dependencies.",
+    "limitation": "Other bundled runtime libraries and internal Cardano versions may duplicate consumer libraries. Outer protocol integrity covers the bundle; consumer lock has no separate integrity for embedded packages."
+  }
+}

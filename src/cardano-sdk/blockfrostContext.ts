@@ -5,6 +5,7 @@
 import type { Cardano as CardanoTypes } from "@cardano-sdk/core";
 
 import { Cardano } from "./index.ts";
+import { rateLimitedFetch } from "../rate-limited-fetch.ts";
 
 type BlockfrostNetwork = "mainnet" | "preprod" | "preview";
 
@@ -88,9 +89,9 @@ const fetchBlockfrostJson = async <T>(
   fetchFn: typeof fetch,
 ): Promise<T> => {
   const url = `${getBlockfrostHost(network)}${path.startsWith("/") ? path : `/${path}`}`;
-  const response = await fetchFn(url, {
+  const response = await rateLimitedFetch(url, {
     headers: { "Content-Type": "application/json", project_id: apiKey },
-  });
+  }, fetchFn);
   if (!response.ok) {
     throw new Error(`Blockfrost ${path}: HTTP ${response.status}`);
   }
