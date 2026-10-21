@@ -3,6 +3,13 @@ on:
     push:
         branches:
             - master
+        paths-ignore:
+            - .github/workflows/pr-tests.yml
+            - .github/workflows/deploy.yml
+            - ci/prepare-library-builds.mjs
+            - ci/prepare-library-builds.test.mjs
+            - ci/publish-policy.test.mjs
+            - ci/README.md
     workflow_dispatch:
 permissions:
     contents: read

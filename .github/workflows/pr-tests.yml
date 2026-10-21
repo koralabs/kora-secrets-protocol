@@ -1,0 +1,60 @@
+name: PR library tests
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: read
+jobs:
+  tests:
+    name: Build and unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: kora-secrets-protocol
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: koralabs/decentralized-minting
+          ref: bfe3542bf262363faa7c8a11740a254f46e1e347
+          path: decentralized-minting
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: koralabs/kora-secrets-crypto
+          ref: f1d9dc9f88c7fd9d63aa5a5afabaea6fbbde1080
+          path: kora-secrets-crypto
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: https://npm.pkg.github.com
+          scope: '@koralabs'
+      - name: Verify immutable build inputs and registry correction
+        run: |
+          node --test kora-secrets-protocol/ci/prepare-library-builds.test.mjs
+          node kora-secrets-protocol/ci/prepare-library-builds.mjs
+      - name: Install locked minting SDK inputs
+        run: npm ci --prefix decentralized-minting
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+      - name: Verify publication trigger policy
+        run: node --test kora-secrets-protocol/ci/publish-policy.test.mjs
+      - name: Build pinned minting SDK
+        run: npm run build --prefix decentralized-minting
+      - name: Install and build pinned crypto library
+        run: |
+          npm ci --prefix kora-secrets-crypto
+          npm run build --prefix kora-secrets-crypto
+      - name: Install locked protocol inputs
+        run: npm ci --prefix kora-secrets-protocol
+      - name: Typecheck and build protocol
+        run: |
+          npm run lint --prefix kora-secrets-protocol
+          npm run build --prefix kora-secrets-protocol
+      - name: Run protocol behavioral tests
+        run: npm test --prefix kora-secrets-protocol
