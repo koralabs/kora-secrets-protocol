@@ -1,5 +1,9 @@
 # @koralabs/kora-secrets-protocol
 
+## Contributor test policy
+
+Tests and coverage are local-only; GitHub Actions must not execute them directly or through package lifecycle scripts, composites, templates, or shared build/publish helpers. Preserve local test scripts. Build, lint, publication, deployment, and production guards remain permitted. Retire obsolete required test checks from branch protections.
+
 The off-chain protocol layer for **Social Secret Recovery** (SSR) on ADA Handles.
 
 - **`.`** — CIP-68 datum codecs (policy / request / approval / guardian-profile), tx-plan
