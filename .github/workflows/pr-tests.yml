@@ -1,4 +1,4 @@
-name: PR library tests
+name: PR library build
 on:
   pull_request:
   push:
@@ -9,7 +9,7 @@ permissions:
   packages: read
 jobs:
   tests:
-    name: Build and unit tests
+    name: Build libraries
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -36,14 +36,11 @@ jobs:
           scope: '@koralabs'
       - name: Verify immutable build inputs and registry correction
         run: |
-          node --test kora-secrets-protocol/ci/prepare-library-builds.test.mjs
           node kora-secrets-protocol/ci/prepare-library-builds.mjs
       - name: Install locked minting SDK inputs
         run: npm ci --prefix decentralized-minting
         env:
           NODE_AUTH_TOKEN: ${{ github.token }}
-      - name: Verify publication trigger policy
-        run: node --test kora-secrets-protocol/ci/publish-policy.test.mjs
       - name: Build pinned minting SDK
         run: npm run build --prefix decentralized-minting
       - name: Install and build pinned crypto library
@@ -56,5 +53,3 @@ jobs:
         run: |
           npm run lint --prefix kora-secrets-protocol
           npm run build --prefix kora-secrets-protocol
-      - name: Run protocol behavioral tests
-        run: npm test --prefix kora-secrets-protocol

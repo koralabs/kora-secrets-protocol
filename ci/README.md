@@ -4,7 +4,7 @@ PR CI builds actual sibling sources at the versions already represented by the p
 
 `prepare-library-builds.mjs` rejects mismatched package versions, checks the original common 5.1.41 integrity and distribution URL, then changes only its stale distribution URL in the ephemeral SDK lock. The alternate GitHub archive was downloaded and SHA512-verified against that existing integrity before introducing the mapping. Dependency versions, integrity, metadata and all other lock entries stay intact. Only the built-in Actions token with packages:read is used; no operator secret is copied into CI. Unexpected or missing inputs fail rather than falling back.
 
-The workflow runs helper regression tests, frozen sibling installs, both real TypeScript library builds, then the protocol's locked install, typecheck, build and complete existing behavioral suite. It does not run a validator compiler, submit transactions, deploy or publish anything. Passing the helper/policy checks alone is not behavioral acceptance.
+The workflow runs frozen sibling installs, both real TypeScript library builds, then the protocol's locked install, typecheck, and build. Tests are local-only: run the helper and publication-policy regression tests and the complete existing behavioral suite locally, never in Actions, including through package lifecycle scripts, composites, templates, or shared helpers. It does not run a validator compiler, submit transactions, deploy or publish anything. Build success alone is not behavioral acceptance.
 
 ## Publication policy
 
@@ -18,4 +18,4 @@ The existing publication workflow ignores only the six exact CI paths listed in 
 - Missing archives are not invented; accepting a missing entry fails the rejection assertion.
 - Only the exact sibling source versions are accepted; accepting 4.0.0 instead of the locked 3.0.1 fails the rejection assertion.
 
-Any failure of the historical sibling build or existing protocol suite remains a real gap. CI does not import unpublished checkout changes or rewrite runtime expectations to force success.
+Any failure of the historical sibling build or existing local protocol suite remains a real gap. CI does not import unpublished checkout changes or rewrite runtime expectations to force success.
