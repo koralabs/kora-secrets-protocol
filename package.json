@@ -47,5 +47,8 @@
   "devDependencies": {
     "@types/node": "^22.12.0",
     "typescript": "^5.8.2"
+  },
+  "overrides": {
+    "ip-address": "^10.3.1"
   }
 }
