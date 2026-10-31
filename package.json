@@ -2,7 +2,7 @@
   "name": "@koralabs/kora-secrets-protocol",
   "version": "1.0.2",
   "type": "module",
-  "description": "Social Secret Recovery \u2014 off-chain protocol: CIP-68 datum codecs, tx-plan builders, chain-query providers, IPFS storage, and the live @cardano-sdk + scalus tx realizers (build/sign/submit) for the SSR validators.",
+  "description": "Social Secret Recovery — off-chain protocol: CIP-68 datum codecs, tx-plan builders, chain-query providers, IPFS storage, and the live @cardano-sdk + scalus tx realizers (build/sign/submit) for the SSR validators.",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -55,5 +55,8 @@
   "peerDependencies": {
     "@koralabs/handles-decentralized-minting": "4.0.0",
     "@koralabs/kora-secrets-crypto": "1.1.0"
+  },
+  "overrides": {
+    "ip-address": "^10.3.1"
   }
 }
