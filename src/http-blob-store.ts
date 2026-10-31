@@ -1,6 +1,7 @@
 import { SsrError, SsrErrorCode } from '@koralabs/kora-secrets-crypto';
 
 import { cidMatches } from './cid.ts';
+import { rateLimitedFetch } from './rate-limited-fetch.ts';
 import type { BlobStore } from './storage.ts';
 
 export interface HttpPinningConfig {
@@ -31,12 +32,12 @@ export class HttpPinningBlobStore implements BlobStore {
   }
 
   async put(bytes: Uint8Array): Promise<string> {
-    const res = await this.fetchImpl(this.cfg.pinUrl, {
+    const res = await rateLimitedFetch(this.cfg.pinUrl, {
       method: 'POST',
       headers: this.cfg.pinHeaders,
       // Uint8Array is a valid fetch body; cast through unknown to avoid a DOM-lib dependency.
       body: bytes as unknown as ArrayBuffer
-    });
+    }, this.fetchImpl);
     if (!res.ok) throw new SsrError(SsrErrorCode.InvalidBundle, `pin failed: HTTP ${res.status}`);
     const json = (await res.json()) as Record<string, unknown>;
     const cid = json[this.cfg.cidField ?? 'IpfsHash'];
@@ -47,7 +48,7 @@ export class HttpPinningBlobStore implements BlobStore {
   }
 
   async get(cid: string): Promise<Uint8Array> {
-    const res = await this.fetchImpl(`${this.cfg.gatewayUrl}/${cid}`);
+    const res = await rateLimitedFetch(`${this.cfg.gatewayUrl}/${cid}`, {}, this.fetchImpl);
     if (!res.ok) throw new SsrError(SsrErrorCode.InvalidBundle, `gateway get failed: HTTP ${res.status}`);
     const bytes = new Uint8Array(await res.arrayBuffer());
     // Content-verify when the CID is a CIDv1-raw address we can recompute; CIDv0/dag-pb CIDs

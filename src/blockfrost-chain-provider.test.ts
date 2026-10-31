@@ -4,6 +4,7 @@ import test from 'node:test';
 import { blake2b256, bytesToHex, utf8ToBytes } from '@koralabs/kora-secrets-crypto';
 
 import { BlockfrostChainProvider, type SsrScriptAddresses } from './blockfrost-chain-provider.ts';
+import { RateLimitedError } from './rate-limited-fetch.ts';
 import {
   datumToCborHex,
   encodeGuardianApprovalDatum,
@@ -26,14 +27,10 @@ function fakeFetch(routes: Record<string, unknown>): typeof fetch {
     const u = String(url);
     for (const [path, body] of Object.entries(routes)) {
       if (u.endsWith(path)) {
-        return {
-          ok: true,
-          status: 200,
-          json: () => Promise.resolve(body)
-        } as Response;
+        return Response.json(body);
       }
     }
-    return { ok: false, status: 404, json: () => Promise.resolve(null) } as Response;
+    return Response.json(null, { status: 404 });
   }) as unknown as typeof fetch;
 }
 
@@ -167,7 +164,7 @@ test('a non-OK HTTP response throws (no silent empty result)', async () => {
     network: 'preview',
     projectId: 'x',
     scripts: SCRIPTS,
-    fetchImpl: (async () => ({ ok: false, status: 500, json: () => Promise.resolve(null) }) as Response) as unknown as typeof fetch
+    fetchImpl: (async () => Response.json(null, { status: 500 })) as typeof fetch
   });
   await assert.rejects(() => p.getTipSlot(), /HTTP 500/);
 });
@@ -178,6 +175,22 @@ test('networkMagic reflects the configured network (isolation aid)', () => {
   assert.equal(preview.networkMagic, 2);
   assert.equal(preprod.networkMagic, 1);
   assert.notEqual(preview.networkMagic, preprod.networkMagic);
+});
+
+test('provider instances share rate-limit waits before reading the next real tip response', async () => {
+  const times: number[] = [];
+  const fetchImpl = (async () => {
+    times.push(Date.now());
+    return times.length === 1
+      ? new Response('', { status: 429, headers: { 'retry-after': '0.03' } })
+      : Response.json({ slot: 123456789 });
+  }) as typeof fetch;
+  const first = new BlockfrostChainProvider({ network: 'preprod', projectId: 'test-key', scripts: SCRIPTS, fetchImpl });
+  const second = new BlockfrostChainProvider({ network: 'preprod', projectId: 'test-key', scripts: SCRIPTS, fetchImpl });
+  await assert.rejects(first.getTipSlot(), RateLimitedError);
+  assert.equal(times.length, 1);
+  assert.equal(await second.getTipSlot(), 123456789);
+  assert.ok(times[1]! - times[0]! >= 30);
 });
 
 // Flag-gated live integration test: only runs when a real preview Blockfrost key is provided.

@@ -1,4 +1,5 @@
 import { hexToBytes, type Network, NETWORK_MAGIC } from '@koralabs/kora-secrets-crypto';
+import { rateLimitedFetch } from './rate-limited-fetch.ts';
 
 import {
   type ApprovalUtxo,
@@ -59,9 +60,9 @@ export class BlockfrostChainProvider implements ChainProvider {
   }
 
   private async get(pathAndQuery: string): Promise<unknown> {
-    const res = await this.fetchImpl(`${BASE_URL[this.cfg.network]}${pathAndQuery}`, {
+    const res = await rateLimitedFetch(`${BASE_URL[this.cfg.network]}${pathAndQuery}`, {
       headers: { project_id: this.cfg.projectId }
-    });
+    }, this.fetchImpl);
     if (res.status === 404) return null;
     if (!res.ok) {
       throw new Error(`blockfrost ${pathAndQuery} -> HTTP ${res.status}`);
