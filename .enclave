@@ -1,0 +1,21 @@
+# kora-secrets-protocol: files whose change must be reviewed by the operator (see CANONICAL_CONTRACT.md).
+# Exact repo-root-relative paths only. Tests, README, fakes and the portable-pack scripts are normal review.
+.enclave
+CANONICAL_CONTRACT.md
+.github/workflows/deploy.yml
+src/datums.ts
+src/plutus-data.ts
+src/tx-builders.ts
+src/reconciliation.ts
+src/cid.ts
+src/storage.ts
+src/chain/lifecycle-tx.ts
+src/chain/tx-build.ts
+src/chain/wallet-signer.ts
+src/chain/mpt-registry.ts
+src/cardano-sdk/txPlan.ts
+src/cardano-sdk/computeScriptDataHash.ts
+src/cardano-sdk/scriptParams.ts
+src/cardano-sdk/cborSplice.ts
+src/cardano-sdk/blockfrostContext.ts
+src/__fixtures__/datum-cbor-v1.json
