@@ -107,8 +107,8 @@ export const applyParamsToScript = (
 
 /**
  * Convert a `PlutusDataJson` to the cardano-sdk Core `PlutusData` shape.
- * The Core shape is a structural union over `bigint`, `Uint8Array`, and
- * plain objects/maps/lists.
+ * The Core shape is a structural union over `bigint`, `Uint8Array`,
+ * `{ items }` lists, `{ data: Map }` maps and `{ constructor, fields: { items } }`.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const plutusDataJsonToCore = (json: PlutusDataJson): any => {
@@ -119,10 +119,10 @@ export const plutusDataJsonToCore = (json: PlutusDataJson): any => {
   if (typeof j.constructor === "number" && Array.isArray(j.fields)) {
     return {
       constructor: BigInt(j.constructor),
-      fields: j.fields.map(plutusDataJsonToCore),
+      fields: { items: j.fields.map(plutusDataJsonToCore) },
     };
   }
-  if (Array.isArray(j.list)) return j.list.map(plutusDataJsonToCore);
+  if (Array.isArray(j.list)) return { items: j.list.map(plutusDataJsonToCore) };
   if (Array.isArray(j.map)) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const m = new Map<any, any>();
@@ -130,7 +130,7 @@ export const plutusDataJsonToCore = (json: PlutusDataJson): any => {
     for (const entry of j.map as { k: any; v: any }[]) {
       m.set(plutusDataJsonToCore(entry.k), plutusDataJsonToCore(entry.v));
     }
-    return m;
+    return { data: m };
   }
   throw new Error("invalid PlutusDataJson");
 };
