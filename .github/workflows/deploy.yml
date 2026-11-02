@@ -10,6 +10,7 @@ on:
             - ci/prepare-library-builds.test.mjs
             - ci/publish-policy.test.mjs
             - ci/README.md
+            - '.local-test-evidence.json'
     workflow_dispatch:
 permissions:
     contents: read
