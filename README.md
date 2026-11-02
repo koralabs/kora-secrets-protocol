@@ -34,22 +34,16 @@ Missing sparse keys denote empty label sets only after those root checks pass. A
 fetch, malformed snapshot, or mismatched root aborts proof construction; names-only
 reconstruction and hardcoded label lists are not valid substitutes.
 
-This recovery build is private. The DeMi SDK 4.0.0 and crypto 1.1.0 are exact
-peer dependencies: install them once alongside the protocol in the consumer. This
+The DeMi SDK (`@koralabs/handles-decentralized-minting` ^4.0.1) and crypto (`@koralabs/kora-secrets-crypto` ^1.1.0)
+are peer dependencies: install them once alongside the protocol in the consumer. This
 preserves `SsrError` class identity and lets label-mint callers use the same SDK and
 Trie instance as registry reconstruction. Bundling a private crypto copy broke the
 real caller's `isSsrError` check; bundling the SDK also hid its label-mint API.
 
-Until those versions exist in the registry, vendor all three verified tarballs in
-the consumer and declare direct `file:vendor/<version-and-hash>.tgz` dependencies.
-The protocol checkout uses `npm ci` with its integrity-locked local development
-artifacts. Their source revisions and checksums are in `vendor/PROVENANCE.json`.
-Build the protocol tarball with `npm run pack:portable -- /path/to/output`; it compiles
-into a fresh staging directory and bundles no dependencies. Validate an installed
+All three packages are published to npm. Validate an installed
 consumer with `npm run validate:consumer -- /path/to/consumer`, plus its own npm ci,
 typecheck and tests. The check verifies shared crypto/SDK resolution, cross-package
 session-mismatch errors, the label-mint API and a real labeled trie inclusion proof.
-Publication remains disabled until both exact peer versions exist in the registry.
 
 API, Blockfrost and IPFS calls share a process-wide rate-limit gate. It honors header/body
 waits across callers, returns long waits, and never automatically retries a 429.
