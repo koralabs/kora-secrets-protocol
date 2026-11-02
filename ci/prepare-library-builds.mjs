@@ -12,7 +12,7 @@ const common = {
 
 export function validateVersions(manifests) {
   for (const [directory, name, version] of [
-    ['kora-secrets-protocol', '@koralabs/kora-secrets-protocol', '1.0.0'],
+    ['kora-secrets-protocol', '@koralabs/kora-secrets-protocol', '1.0.2'],
     ['decentralized-minting', '@koralabs/handles-decentralized-minting', '3.0.1'],
     ['kora-secrets-crypto', '@koralabs/kora-secrets-crypto', '1.0.0'],
   ]) {

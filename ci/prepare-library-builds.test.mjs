@@ -48,7 +48,7 @@ test('rejects a missing archive instead of inventing a lock entry', () => {
 
 test('accepts exact source versions and rejects a mismatched sibling build', () => {
   const manifests = {
-    'kora-secrets-protocol': { name: '@koralabs/kora-secrets-protocol', version: '1.0.0' },
+    'kora-secrets-protocol': { name: '@koralabs/kora-secrets-protocol', version: '1.0.2' },
     'decentralized-minting': { name: '@koralabs/handles-decentralized-minting', version: '3.0.1' },
     'kora-secrets-crypto': { name: '@koralabs/kora-secrets-crypto', version: '1.0.0' },
   };
