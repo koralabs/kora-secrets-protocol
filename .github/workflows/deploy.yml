@@ -26,8 +26,7 @@ jobs:
             - name: Setup node
               uses: actions/setup-node@v4
               with:
-                  node-version: 24
-                  registry-url: https://registry.npmjs.org
+                  node-version: 26                  registry-url: https://registry.npmjs.org
                   scope: '@koralabs'
 
             - name: Install deps
